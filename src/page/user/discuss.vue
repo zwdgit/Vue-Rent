@@ -8,7 +8,7 @@
             <mu-list-item class="Top-list-item" :title="item.name + ' | ' + '#' + item.type" :describeText="item.date">
                 <mu-avatar :src="item.icon" slot="leftAvatar"/>
                 <mu-icon value="keyboard_arrow_down" slot="right" @click="openBottomSheet" />
-                </mu-icon-menu>
+
             </mu-list-item>
             <mu-card-text>
                 {{item.source}}
@@ -71,8 +71,12 @@
 </script>
 <style scoped lang="less">
     .Top-Class{
-        position:fixed;
-        top: 0;
+      background-color: #3d4955;
+      position: fixed;
+      top: 0;
+      padding: 0;
+      text-align: center;
+      font-size: 1.2em;
     }
     .titleClass{
         text-align:center;

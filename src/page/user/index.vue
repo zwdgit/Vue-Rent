@@ -1,12 +1,14 @@
 <template>
   <div>
-    <img :src="User_Datas.background" style="width:100%;position:fixed">
+    <!--<img :src="modify_data.background" style="width:100%;position:fixed">-->
+    <mu-appbar title="用户中心" class="Top-Class"/>
+    <div class="seize-seat-top"></div>
     <div class="TempLate">
       <div class="User-Card-Zw"></div>
       <mu-card class="UserCard-Top">
-        <mu-list-item to="/user/modifydata" class="Top-list-item"
-                      :title="User_Datas.nickname + '(' + User_Datas.name + ')'" :describeText="User_Datas.profile">
-          <mu-avatar :src="User_Datas.icon + User_Datas.id" slot="leftAvatar"/>
+        <mu-list-item @click="ToModifydate" class="Top-list-item"
+                      :title="modify_data.nickName" :describeText="modify_data.introduction">
+          <mu-avatar src="http://localhost:8081/icon.png" slot="leftAvatar"/>
           <mu-icon value="account_circle" slot="right"/>
         </mu-list-item>
         <mu-flexbox>
@@ -40,19 +42,7 @@
           <mu-icon slot="right" value="chevron_right" color="#9e9e9e"/>
         </mu-list-item>
       </mu-card>
-      <mu-card class="UserCard-Top">
-        <mu-flexbox>
-          <mu-flexbox-item style="border-right:1px solid #eeeeee">
-            <mu-bottom-nav-item title="黑名单" to="/user/blacklist" class="User-Bottom-Btn" icon="block"/>
-          </mu-flexbox-item>
-          <mu-flexbox-item style="border-right:1px solid #eeeeee">
-            <mu-bottom-nav-item title="关键词过滤" to="/user/keyword" class="User-Bottom-Btn" icon="format_align_center"/>
-          </mu-flexbox-item>
-          <mu-flexbox-item>
-            <mu-bottom-nav-item title="发布权限" to="/user" class="User-Bottom-Btn" icon="assignment_turned_in"/>
-          </mu-flexbox-item>
-        </mu-flexbox>
-      </mu-card>
+
       <mu-card class="UserCard-Top">
         <mu-flat-button label="退出当前账号" @click="End_User" class="User-Top-Btn" color="rgb(244, 67, 54)"/>
       </mu-card>
@@ -66,15 +56,10 @@
       return {
         bottomNav: 'user',
         bottomNavColor: 'user',
-        User_Datas: {},
       }
     },
     created() {
-      this.User_Datas = JSON.parse(sessionStorage.getItem("User_Data"));
-      console.log(this.PhoneValue.length)
-      if (this.PhoneValue.length < '11') {
-        this.UserLoginBtn = true;
-      }
+      this.modify_data=JSON.parse(sessionStorage.getItem("User_Data"));
     },
     computed: {
       PhoneValue() {
@@ -82,18 +67,23 @@
       }
     },
     methods: {
+      ToModifydate(){
+        sessionStorage.setItem("modify_data",JSON.stringify(this.modify_data));
+        this.$router.push('/user/modifydata');
+      },
       handleChange(val) {
         this.bottomNav = val
       },
       End_User() {
         this.$store.commit('LoginPhone', '');
-        sessionStorage.removeItem('userphone')
-        console.log(this.PhoneValue.length)
+        sessionStorage.removeItem('userphone');
+        sessionStorage.removeItem('id');
+        sessionStorage.removeItem('modify_data');
         this.$router.push('/home');
       },
       ToUser_issue(label) {
         sessionStorage.setItem("UserTo", JSON.stringify(label))
-        this.$router.push('/user/Userissue');
+        this.$router.push('/user/issue');
       },
       User_Follow() {
         this.$router.push('/user/follow')
@@ -101,38 +91,42 @@
     }
   }
 </script>
+
 <style scoped lang="less">
+  .Top-Class {
+    background-color: #3d4955;
+    position: fixed;
+    top: 0;
+    padding: 0;
+    text-align: center;
+    font-size: 1.2em;
+  }
+  .seize-seat-top {
+    height: 56px;
+  }
   .TempLate {
     padding: 1em;
     width: 100%;
     height: 100%;
   }
-
   .mu-paper {
     position: fixed;
     width: 100%;
     bottom: 0;
     table-layout: fixed;
   }
-
-  .User-Card-Zw {
-    margin-top: 60%;
-  }
-
   .mu-card {
     border-radius: 0.3em;
     margin-top: 5%;
     width: 100%;
     background-color: rgba(255, 255, 255, 0.7);
   }
-
   .UserCard-Top {
     border-radius: 0.3em;
     margin-top: 5%;
     width: 100%;
     background-color: rgba(255, 255, 255, 0.7);
   }
-
   .Top-list-item {
     border-bottom: 1px solid #eeeeee;
   }
@@ -145,28 +139,23 @@
     text-align: center;
     background-color: #474a4f;
   }
-
   .demo-paper .mu-avatar {
     height: 100px;
     width: 100px;
   }
-
   .mu-avatar-inner img {
     width: 3em;
     height: 3em;
   }
-
   .User-Top-Btn-Left {
     width: 100%;
     height: 3em;
     border-right: 1px solid #eeeeee;
   }
-
   .User-Top-Btn {
     width: 100%;
     height: 3em;
   }
-
   .User-Bottom-Btn {
     width: 100%;
     height: 5em;

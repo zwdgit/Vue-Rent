@@ -1,108 +1,125 @@
 <template>
-    <div>
-        <mu-text-field style="color:#fff" :label="VeriCodeLaBel" v-model="VeriCode" @change="VeriCode_LaBel" type="number" icon="phonelink_lock"  labelFloat fullWidth />
-        <mu-flat-button  :label="VeriCodeBtnLaBel" class="VeriCodeBtn" @click="getCode()" primary fullWidth />
-        <mu-text-field style="color:#fff" :label="PassWordLaBel" v-model="PassWordValue" @change="PassWord_LaBel" type="password" icon="lock_outline" labelFloat fullWidth/>
-        <mu-raised-button @click="login()" :label="LoginBtn" class="Login-Button-One" secondary fullWidth/>
-        <mu-snackbar v-if="VeriCodetoast" message="验证码错误(demo输入六位即可)" action="确定" @actionClick="hideToast" @close="hideToast"/>
-        <mu-snackbar v-if="registertoast" message="请填入所有信息(demo随便输入)" action="确定" @actionClick="hideToast" @close="hideToast"/>
-    </div>
+  <div>
+    <mu-appbar style="background-color: rgba(0,0,0,0);margin-top: 10px" v-bind:z-depth="0">
+      <mu-icon-button icon="keyboard_return" slot="left" style="color: #515d6d" @click="RouterOne"/>
+    </mu-appbar>
+    <mu-content-block style="margin-top: 15%">
+        <mu-flexbox orient="vertical">
+          <mu-flexbox-item class="flexbox_1">
+              注册
+          </mu-flexbox-item>
+          <mu-flexbox-item class="flexbox_2">
+            <mu-paper class="demo-paper" :zDepth="2">
+              <mu-text-field label="手机号" v-model="PhoneNumber" type="number" labelFloat/>
+              <mu-text-field label="密码" v-model="password" type="password" labelFloat/>
+            </mu-paper>
+          </mu-flexbox-item>
+          <mu-flexbox-item class="flexbox_3">
+            <mu-raised-button label="注册" align="center"  class="my_button" @click="register" />
+          </mu-flexbox-item>
+        </mu-flexbox>
+      <mu-content-block style="bottom:0;text-align:center;">
+        已经有账号?<b @click="toLogin">登录</b>
+      </mu-content-block>
+    </mu-content-block>
+    <mu-toast v-if="toast" :message="indexToast" @close="hideToast"
+              style="text-align: center;background-color: #eee;color: #ea5545;border-radius:0;"/>
+  </div>
 </template>
 
 <script>
-export default {
-  data () {
-    return {
-      PassWordValue: '',
-      VeriCode: '',
-      VeriCodeLaBel: '请输入您的验证码',
-      PassWordLaBel: '请输入您的密码',
-      LoginBtn: '注册',
-      VeriCodetoast: false,
-      registertoast: false,
-      show: true,
-      count: '',
-      VeriCodeBtnLaBel: '获取验证码',
-      timer: null,
-      PhoneNumber: '',
-    }
-  },
-  created(){
-      this.PhoneNumber = JSON.parse(sessionStorage.getItem("PhoneNumber"));
-      setTimeout(() => {this.getCode()},1000)
-  },
-  methods: {
-      PassWord_LaBel () {
-          if(this.PassWordLaBel.length > '1'){
-              this.PassWordLaBel = ' ';
-          }else{
-              this.PassWordLaBel = '请输入您的密码';
-          }
-      },
-      VeriCode_LaBel () {
-          if(this.VeriCodeLaBel.length > '1'){
-              this.VeriCodeLaBel = ' ';
-          }else{
-              this.VeriCodeLaBel = '请输入您的验证码';
-          }
-      },
-      RouterOne(){
-          this.$router.go(-1);
-      },
-      login() {
-          console.log(this.PhoneNumber.length)
-          if(this.PhoneNumber.length >= '11' && this.VeriCode.length > '1' && this.PassWordValue.length > '1'){
-              if(this.VeriCode.length < '6'){
-                  this.VeriCodetoast = true
-                  if (this.toastTimer) clearTimeout(this.toastTimer)
-                  this.toastTimer = setTimeout(() => { this.VeriCodetoast = false }, 2000)
-              }else{
-                  this.$store.commit('LoginPhone',this.PhoneNumber)
-                  this.$router.push('/user')
-              }
-          }else{
-              this.registertoast = true
-              if (this.toastTimer) clearTimeout(this.toastTimer)
-              this.toastTimer = setTimeout(() => { this.registertoast = false }, 2000)
-          }
-      },
-      getCode(){
-          if(this.show === true){
-              this.$toast.center('验证码发送成功！');
-                const TIME_COUNT = '60';
-                    if (!this.timer) {
-                        this.count = TIME_COUNT;
-                        this.show = false;
-                        this.timer = setInterval(() => {
-                        if (this.count > 0 && this.count <= TIME_COUNT) {
-                            this.count--;
-                            this.VeriCodeBtnLaBel = this.count + '秒后重试'
-                        } else {
-                            this.VeriCodeBtnLaBel = '重新获取'
-                            this.show = true;
-                            clearInterval(this.timer);
-                            this.timer = null;
-                        }
-                        }, 1000)
-                    }
-              }
-        },
-      hideToast () {
-        this.registertoast = false
-        this.toast = false
-            if (this.toastTimer) clearTimeout(this.toastTimer)
+  import MuFlexbox from "muse-ui/src/flexbox/flexbox";
+  import MuFlexboxItem from "muse-ui/src/flexbox/flexboxItem";
+  export default {
+    components: {MuFlexboxItem, MuFlexbox},
+    data() {
+      return {
+        PhoneNumber: '',
+        password:'',
+        toast:false,
       }
+    },
+    methods: {
+      RouterOne() {
+        this.$router.go(-1);
+      },
+      register(){
+        let params = new URLSearchParams();
+        let userName = this.PhoneNumber;
+        let password = this.password;
+        if (userName.length === 11) {
+          if (password.length >= 6 && password.length <= 18) {
+            let url = 'http://localhost:8081/api/register'
+            params.append("userName", userName);
+            params.append("password", password);
+            params.append("nickName", userName);
+            axios.post(url, params).then(res => {
+              let code=res.data.code;
+              console.log(code);
+              if (code === 200) {
+                console.log(code);
+                console.log(res.data.data)
+                sessionStorage.setItem("User_Data", JSON.stringify(res.data.data));
+                this.$toast.center('注册成功!');
+                this.$store.commit('LoginPhone', this.PhoneNumber);
+                this.$store.commit('SetId', res.data.data.id);
+                this.$router.push('/user');
+              }else {
+                this.indexToast=res.data.message;
+                this.showToast();
+              }
+            }).catch(err=> {
+              this.indexToast = '网络请求失败';
+              this.showToast();
+            });
+          } else {
+            this.indexToast = '密码为6-18位';
+            this.showToast();
+          }
+        } else {
+          this.indexToast = '请输入正确的手机号和密码';
+          this.showToast();
+        }
+      },
+      toLogin(){
+        this.$router.push('/login');
+      },
+      showToast() {
+        this.toast = true
+        if (this.toastTimer) clearTimeout(this.toastTimer)
+        this.toastTimer = setTimeout(() => {
+          this.toast = false
+        }, 2000)
+      },
+      hideToast() {
+        this.toast = false
+        if (this.toastTimer) clearTimeout(this.toastTimer)
+      },
+    }
   }
-}
 </script>
 <style scoped lang="less">
-    .VeriCodeBtn{
-        margin-top: -3.7em;
-        float:right;
-    }
-    .Login-Button-One{
-        margin-top: 2em;
-        width:96%;
-        margin-left:4%;
-    }
+  .my_button{
+
+  }
+  .flexbox_1{
+    text-align: center;
+    font-size: x-large;
+    line-height: 70px;
+    color: #515d6d;
+  }
+  .flexbox_2{
+    text-align: center;
+    font-size: x-large;
+    color: #515d6d;
+  }
+  .flexbox_3{
+    text-align: center;
+  }
+  .demo-paper {
+    display: inline-block;
+    width: 90%;
+    margin: 20px;
+    text-align: center;
+  }
 </style>

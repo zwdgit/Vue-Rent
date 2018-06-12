@@ -3,8 +3,10 @@
         <mu-icon-button icon="keyboard_arrow_left" class="Top-Class"  @click="RouterOne"/>
         <div class="topic">
             <span class="text">
-                <p style="font-size: 1.5em;color:#fff"># 我和杭州有个约会 #</p>
-                <p style="color:#9e9e9e">我和杭州有个约会我和杭州有个约会我和杭州有个约会我和杭州有个约会</p>
+                <p style="font-size: 1.5em;color:#fff"># 聆听工大的专属语言 #</p>
+                <p style="color:#fff">工大经历了数年蜕变走到你的身边，它跨过斗转星移，你走进学海渊渊。
+它是一个老人，是一个新生儿，是青壮年，亦是家园。
+如同现在的你，走在前进的路上，虽步履蹒跚跌跌撞撞，仍一如既往，在路上，信念间。</p>
             </span>
         </div>
         <div class="text-decoration">
@@ -65,8 +67,8 @@ export default {
         position: relative;;
         top: 0;
         background-image: url(http://placeimg.com/828/414/any);
-        background-size: 100% 100%;  
-        -moz-background-size: 100% 100%;  
+        background-size: 100% 100%;
+        -moz-background-size: 100% 100%;
         -webkit-background-size: 100% 100%;
         height: 13em;
         padding: 1em;

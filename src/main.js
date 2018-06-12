@@ -19,9 +19,10 @@ Vue.config.productionTip = false
 window.axios = axios;
 
 Vue.use(ImgLazyLoad, {
-  loading: 'http://47.100.166.244/timg.gif',
+  loading: 'http://localhost:8080/static/timg.gif',
   })
 axios.defaults.baseURL = 'https://www.easy-mock.com/mock/5ac1881d19f9911d167ac7b3/rent';
+axios.defaults.withCredentials = true;
 const router = new Router({
   mode: 'history',
   routes,
